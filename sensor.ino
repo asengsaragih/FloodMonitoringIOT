@@ -1,4 +1,4 @@
-const int inoutansensor = A0;
+const int inputsensor = A0;
 int TURBINE;
 int HSensor = 2;
 int Calc;
@@ -61,5 +61,5 @@ void loop() {
   }
 
   Serial.println("");
-  delay(1000)
+  delay(1000);
 }
