@@ -177,16 +177,16 @@ int main (int argc, const char* argv[] )
         led_blink = millis();
         digitalWrite(RF_LED_PIN, HIGH);
 #endif
-        // ifstream  myfile ("/home/pi/gps.txt") ;
+        ifstream  myfile ("/home/pi/gps.txt") ;
         ifstream  myfile2 ("/home/pi/sensor.txt");
         // Send a message to rf95_server
-        // while (getline (myfile,line)){
-        //  new1=line;
-        // }
+        while (getline (myfile,line)){
+         new1=line;
+        }
         while (getline (myfile2,line2)) {
         new2=line2;
         }
-        // const uint8_t *data1 = reinterpret_cast<const uint8_t*>(new1.c_str());
+        const uint8_t *data1 = reinterpret_cast<const uint8_t*>(new1.c_str());
         const uint8_t *data2 = reinterpret_cast<const uint8_t*>(new2.c_str());
 //////////////////////////////////////////////
 /*       ofstream myfile3("/home/pi/data.txt"); 
