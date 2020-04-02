@@ -19,6 +19,13 @@
 #include <RH_RF69.h>
 #include <RH_RF95.h>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+using namespace std;
+
 // define hardware used change to fit your need
 // Uncomment the board you have, if not listed 
 // uncommment custom board and set wiring tin custom section
@@ -66,6 +73,13 @@ int main (int argc, const char* argv[] )
 {
   static unsigned long last_millis;
   static unsigned long led_blink = 0;
+
+  std::string line;
+  std::string line2;
+  std::string new1;
+  std::string new2;
+  std::string new3;
+  std::string line3;
   
   signal(SIGINT, sig_handler);
   printf( "%s\n", __BASEFILE__);
@@ -158,23 +172,38 @@ int main (int argc, const char* argv[] )
 
       //printf( "millis()=%ld last=%ld diff=%ld\n", millis() , last_millis,  millis() - last_millis );
 
-      // Send every 5 seconds
-      if ( millis() - last_millis > 5000 ) {
+      // Send every 1 seconds
+      if ( millis() - last_millis > 1000 ) {
         last_millis = millis();
 
 #ifdef RF_LED_PIN
         led_blink = millis();
         digitalWrite(RF_LED_PIN, HIGH);
 #endif
+        // data yang diambil dari sensor dibaca disini
+        ifstream  myfile ("/home/pi/gps.txt") ;
+        ifstream  myfile2 ("/home/pi/sensor.txt");
+
+        while (getline (myfile,line)){
+            new1=line;
+        }
+
+        while (getline (myfile2,line2)) {
+            new2=line2;
+        }
+
+        const uint8_t *data1 = reinterpret_cast<const uint8_t*>(new1.c_str());
+        const uint8_t *data2 = reinterpret_cast<const uint8_t*>(new2.c_str());
+
+        uint8_t len1 = 100;
+        uint8_t len2 = 100;
+        uint8_t len3 = 100;
         
-        // Send a message to rf95_server
-        uint8_t data[] = "Hi Aldi Saragih";
-        uint8_t len = sizeof(data);
-        
-        printf("Sending %02d bytes to node #%d => ", len, RF_GATEWAY_ID );
-        printbuffer(data, len);
+        printf("Sending %02d bytes to node #%d => ", len1, len2, RF_GATEWAY_ID );
+        cout <<data1<< endl;
         printf("\n" );
-        rf95.send(data, len);
+        rf95.send(data1,len1);
+        //rf95.send(data2,len2);
         rf95.waitPacketSent();
 /*
         // Now wait for a reply
