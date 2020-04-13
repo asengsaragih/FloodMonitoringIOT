@@ -59,43 +59,27 @@ void read_gpsd_data() {
 ///it in a Contaier
 int main(void)
 {
-    std::thread gps_thread(read_gpsd_data);
-    std::string line;
-	std::string new1;
-	ifstream myfile2 ("/home/pi/sensor.txt");
+	ifstream sensorData;
+	string sensorDataTmp;
+	string sensorDataLine;
+	sensorData.open("/home/pi/sensor.txt");
 	
-    while (true) {
-		
-		while (getline(myfile2, line)) {
-			new1 = line;
-		}
-		
-		const  uint8_t *data = reinterpret_cast<const uint8_t*>(new1.c_str());
+	std::thread gps_thread(read_gpsd_data);
+                  
+	while (getline(sensorData, sensorDataTmp)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        GPSPosition last_pos = GPSPosition::get_last_3d_fix_value();
-        time_t now_c = chrono::system_clock::to_time_t(last_pos.get_time());
-        now_c = now_c + 25200;
-        strftime(no, 19, "%d/%m/%y %H:%M:%S", localtime(&now_c));
-        test = no;
-        std::cout << " Time: " << test
-                  << " Lat: " << last_pos.get_latitude()
+		GPSPosition last_pos = GPSPosition::get_last_3d_fix_value();
+		
+		std::cout << " Lat: " << last_pos.get_latitude()
                   << " Lon: " << last_pos.get_longitude()
                   << " Alt: " << last_pos.get_altitude()
-                  << "  " <<data<<std::endl;
-                  
-        ofstream myfile("/home/pi/gps.txt");
-		if (myfile.is_open()) {
-			myfile << " Time: " << test
-			<< " Lat: " << last_pos.get_latitude()
-			<< " Lon: " << last_pos.get_longitude()
-			<< " Alt: " << last_pos.get_altitude() 
-			<< "   " <<data<<std::endl;
-			usleep(1000000);
-		} else {
-			printf("unable to open gps.txt or sensor.txt");
-		}
+                  << " Data: " << sensorDataTmp << endl;
+		usleep(1000000);
 	}
-    gReadGps = false;
+	
+	sensorData.clear();
+	
+	gReadGps = false;
     gps_thread.join();
     return 0;
 }
