@@ -64,21 +64,38 @@ int main(void)
 	string sensorDataLine;
 	sensorData.open("/home/pi/sensor.txt");
 	
+	string currentTime;
+	char* no = new char ();
+	
 	std::thread gps_thread(read_gpsd_data);
                   
 	while (getline(sensorData, sensorDataTmp)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		GPSPosition last_pos = GPSPosition::get_last_3d_fix_value();
+
+		time_t now_c = chrono::system_clock::to_time_t(last_pos.get_time());
+		strftime(no, 19, "%d/%m/%y %H:%M:%S", localtime(&now_c));
+		currentTime = no;
 		
-		std::cout << " Lat: " << last_pos.get_latitude()
-                  << " Lon: " << last_pos.get_longitude()
-                  << " Alt: " << last_pos.get_altitude()
-                  << " Data: " << sensorDataTmp << endl;
+		std::cout << " Time: " << currentTime
+				  << "| Lat: " << last_pos.get_latitude()
+                  << "| Lon: " << last_pos.get_longitude()
+                  << "| Alt: " << last_pos.get_altitude()
+                  << "| Data: " << sensorDataTmp << endl;
+                  
+        ofstream exportFile("/home/pi/gps.txt");
+        if (exportFile.is_open()) {
+			exportFile << " Time: " << currentTime
+				  << "| Lat: " << last_pos.get_latitude()
+                  << "| Lon: " << last_pos.get_longitude()
+                  << "| Alt: " << last_pos.get_altitude()
+                  << "| Data: " << sensorDataTmp << endl;
+		}
 		usleep(1000000);
 	}
-	
+
 	sensorData.clear();
-	
+
 	gReadGps = false;
     gps_thread.join();
     return 0;
