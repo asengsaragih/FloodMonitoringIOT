@@ -1,3 +1,4 @@
+
 // rf95_server.cpp
 //
 // Example program showing how to use RH_RF95 on Raspberry Pi
@@ -64,10 +65,10 @@ void sig_handler(int sig)
 }
 
 //Main Function
-int main (int argc, const char* argv[] )
+int main ( int argc, const char* argv[] )
 {
-  // ofstream myfile ( "/home/pi/gps.txt" );
-  ofstream myfile ( "/var/www/floodMonitoring/data.txt" );
+ //ofstream myfile ( "/home/pi/gps.txt" );
+ 
   unsigned long led_blink = 0;
 
   signal(SIGINT, sig_handler);
@@ -156,7 +157,7 @@ int main (int argc, const char* argv[] )
 #ifdef RF_IRQ_PIN
       // We have a IRQ pin ,pool it instead reading
       // Modules IRQ registers from SPI in each loop
-      
+
       // Rising edge fired ?
       if (bcm2835_gpio_eds(RF_IRQ_PIN)) {
         // Now clear the eds flag by setting it to 1
@@ -177,20 +178,17 @@ int main (int argc, const char* argv[] )
           uint8_t id   = rf95.headerId();
           uint8_t flags= rf95.headerFlags();;
           int8_t rssi  = rf95.lastRssi();
-          
+
           if (rf95.recv(buf, &len)) {
             printf("Packet[%02d] #%d => #%d %ddB: ", len, from, to, rssi);
-           // printbuffer(buf, len);
             std::cout << buf << std::endl;
-          }
-
-          if (myfile.is_open()) {
-            myfile << buf << std::endl;
-            usleep(1000000);
-          }
-
-          else {
-          Serial.print("receive failed");
+            
+            ofstream myfile ("/var/www/floodMonitoring/data.txt");
+            
+            if (myfile.is_open()) {
+              myfile << buf << std::endl;
+              usleep(1000000);
+            }
           }
           printf("\n");
         }
@@ -220,6 +218,6 @@ int main (int argc, const char* argv[] )
  bcm2835_close();
   //myfile.close();
   return 0;
-}
+} 
 
 
