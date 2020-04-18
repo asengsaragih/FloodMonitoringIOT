@@ -22,7 +22,7 @@ const MINUTES = 60000;
 const TIMEOUT_TIME = 10000;
 
 
-function testLog() {
+function getLog() {
     $.ajax({
         url: 'data.txt',
         dataType: 'text',
@@ -61,23 +61,57 @@ function sendData(textValue) {
     var level = splitWaterData[1];
     var category = splitWaterData[2];
     var miliestime = "-" + Math.round((new Date()).getTime() / 1000);
+    var date = correctionDate(splitDataTime[0]);
+    var time = splitDataTime[1];
 
-    console.log(miliestime);
+
+
+    var push = database.ref("Marker/" + idMarker + "/recent/").push();
+
+    var waterData = {
+        category: category,
+        date: date,
+        debit: debit + " L/m",
+        level: level + " cm",
+        miliestime: miliestime,
+        status: 1,
+        time: time,
+    };
+
+    push.set(waterData);
 }
 
-testLog();
+function correctionDate(rawData) {
+    var splitdata = rawData.split("/");
+    var rawMonth = splitdata[1];
+    var month = "";
 
+    if (rawMonth == "01") {
+        month = "Januari"
+    } else if (rawMonth == "02") {
+        month = "Februari"
+    } else if (rawMonth == "03") {
+        month = "Maret"
+    } else if (rawMonth == "04") {
+        month = "April"
+    } else if (rawMonth == "05") {
+        month = "Mei"
+    } else if (rawMonth == "06") {
+        month = "Juni"
+    } else if (rawMonth == "07") {
+        month = "Juli"
+    } else if (rawMonth == "08") {
+        month = "Agustus"
+    } else if (rawMonth == "09") {
+        month = "September"
+    } else if (rawMonth == "10") {
+        month = "Oktober"
+    } else if (rawMonth == "11") {
+        month = "November"
+    } else {
+        month = "Desember";
+    }
 
-// function getLog() {
-//     $.ajax({
-//         url: 'data.txt',
-//         dataType: 'text',
-//         success: function(text) {
-//             $("#tmpdata").text(text);
-//             console.log(text);
-//             setTimeout(getLog, TIMEOUT_TIME); // refresh every 30 seconds
-//         }
-//     })
-// }
-
-// getLog();
+    var date = splitdata[0] + " " + month + " " + "20" + splitdata[2];
+    return date;
+}
