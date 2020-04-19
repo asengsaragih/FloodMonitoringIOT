@@ -26,7 +26,8 @@ string test;
 //Controlling the thread flow
 bool gReadGps = true;
 
-
+//penambahan untuk id marker, didapatkan dari firebase nya langusung
+string ID_MARKER = "-M3hNT_r2N3g894WMhh2";
 
 /// Thread which reads all position form the gpsd
 /// server
@@ -67,8 +68,9 @@ int main(void)
 	string currentTime;
 	char* no = new char ();
 	
+
 	std::thread gps_thread(read_gpsd_data);
-                  
+
 	while (getline(sensorData, sensorDataTmp)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		GPSPosition last_pos = GPSPosition::get_last_3d_fix_value();
@@ -76,22 +78,27 @@ int main(void)
 		time_t now_c = chrono::system_clock::to_time_t(last_pos.get_time());
 		strftime(no, 19, "%d/%m/%y %H:%M:%S", localtime(&now_c));
 		currentTime = no;
-		
+
 		std::cout << " Time: " << currentTime
 				  << "| Lat: " << last_pos.get_latitude()
                   << "| Lon: " << last_pos.get_longitude()
                   << "| Alt: " << last_pos.get_altitude()
-                  << "| Data: " << sensorDataTmp << endl;
-                  
+                  << "| Data: " << sensorDataTmp
+                  << "| Id: " << ID_MARKER << endl;
+
         ofstream exportFile("/home/pi/gps.txt");
         if (exportFile.is_open()) {
 			exportFile << " Time: " << currentTime
 				  << "| Lat: " << last_pos.get_latitude()
                   << "| Lon: " << last_pos.get_longitude()
                   << "| Alt: " << last_pos.get_altitude()
-                  << "| Data: " << sensorDataTmp << endl;
+                  << "| Data: " << sensorDataTmp
+                  << "| Id: " << ID_MARKER << endl;
+
 		}
+
 		usleep(1000000);
+
 	}
 
 	sensorData.clear();
