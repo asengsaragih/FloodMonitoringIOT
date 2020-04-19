@@ -21,13 +21,13 @@ const database = firebase.database();
 const MINUTES = 60000;
 const TIMEOUT_TIME = 10000;
 
-
 function getLog() {
     $.ajax({
         url: 'data.txt',
         dataType: 'text',
         success: function(text) {
             $("#tmpdata").text(text);
+            $("#timeDisplay").text("Jeda data baru : " + Number(TIMEOUT_TIME / 60000) + " Menit");
             sendData(text);
             // setTimeout(getLog, TIMEOUT_TIME); // refresh every 30 seconds
         }
@@ -64,12 +64,19 @@ function sendData(textValue) {
     var date = correctionDate(splitDataTime[0]);
     var time = splitDataTime[1];
 
+    // addingRecentData(idMarker, category, date, debit, level, miliestime, time);
 
+    database.ref("Marker/" + idMarker).on("value", function (snapshot) {
+        var val = snapshot.val();
+
+        if (latitude != val.latitude || longitude != val.longitude || altitude != val.alt) {
+            updateMarker(idMarker, latitude, longitude, altitude);
+        }
+    });
 
     var push = database.ref("Marker/" + idMarker + "/recent/").push();
-
     var waterData = {
-        category: category,
+        category: parseInt(category),
         date: date,
         debit: debit + " L/m",
         level: level + " cm",
@@ -77,7 +84,6 @@ function sendData(textValue) {
         status: 1,
         time: time,
     };
-
     push.set(waterData);
 }
 
@@ -114,4 +120,27 @@ function correctionDate(rawData) {
 
     var date = splitdata[0] + " " + month + " " + "20" + splitdata[2];
     return date;
+}
+
+function updateMarker(key, latitude, longitude, altitude) {
+    var update = {
+        latitude : Number(latitude),
+        longitude : Number(longitude),
+        alt : Number(altitude),
+    };
+    database.ref('Marker/' + key).update(update);
+}
+
+function addingRecentData(idMarker, category, date, debit, level, miliestime, time) {
+    var push = database.ref("Marker/" + idMarker + "/recent/").push();
+    var waterData = {
+        category: parseInt(category),
+        date: date,
+        debit: debit + " L/m",
+        level: level + " cm",
+        miliestime: miliestime,
+        status: 1,
+        time: time,
+    };
+    push.set(waterData);
 }
