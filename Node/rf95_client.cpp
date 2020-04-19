@@ -208,7 +208,7 @@ int main (int argc, const char* argv[] )
         const uint8_t *data1 = reinterpret_cast<const uint8_t*>(new1.c_str());
         const uint8_t *data2 = reinterpret_cast<const uint8_t*>(new2.c_str());
 
-        uint8_t len1 = 100;
+        uint8_t len1 = 200;
         uint8_t len2 = 100;
         uint8_t len3 = 100;
         
