@@ -183,7 +183,7 @@ int main ( int argc, const char* argv[] )
             printf("Packet[%02d] #%d => #%d %ddB: ", len, from, to, rssi);
             std::cout << buf << std::endl;
             
-            ofstream myfile ("/var/www/floodMonitoring/data.txt");
+            ofstream myfile ("/home/pi/data.txt");
             
             if (myfile.is_open()) {
               myfile << buf << std::endl;
