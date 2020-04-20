@@ -183,8 +183,11 @@ int main (int argc, const char* argv[] )
         // data yang diambil dari sensor dibaca disini
         ifstream  myfile ("/home/pi/gps.txt") ;
         ifstream  myfile2 ("/home/pi/sensor.txt");
+        string ID_MARKER = "-M3hNT_r2N3g894WMhh2";
+
 
         while (getline (myfile,line)){
+            //new1=line + "| Id: " + ID_MARKER;
             new1=line;
         }
 
@@ -192,17 +195,19 @@ int main (int argc, const char* argv[] )
             new2=line2;
         }
 
+
         const uint8_t *data1 = reinterpret_cast<const uint8_t*>(new1.c_str());
         const uint8_t *data2 = reinterpret_cast<const uint8_t*>(new2.c_str());
 
-        uint8_t len1 = 100;
+        uint8_t len1 = 200;
         uint8_t len2 = 100;
         uint8_t len3 = 100;
-        
+
         printf("Sending %02d bytes to node #%d => ", len1, len2, RF_GATEWAY_ID );
-        cout <<data1<< endl;
+
+        cout <<data1 << endl;
         printf("\n" );
-        rf95.send(data1,len1);
+        rf95.send(data1, len1);
         //rf95.send(data2,len2);
         rf95.waitPacketSent();
 /*

@@ -19,7 +19,7 @@ const database = firebase.database();
 // set waktu untuk setiap pengambilan datanya. default nya 15 menit
 // const TIMEOUT_TIME = 15 * MINUTES;
 const MINUTES = 60000;
-const TIMEOUT_TIME = 10000;
+const TIMEOUT_TIME = MINUTES * 15;
 
 function getLog() {
     $.ajax({
@@ -29,7 +29,7 @@ function getLog() {
             $("#tmpdata").text(text);
             $("#timeDisplay").text("Jeda data baru : " + Number(TIMEOUT_TIME / 60000) + " Menit");
             sendData(text);
-            // setTimeout(getLog, TIMEOUT_TIME); // refresh every 30 seconds
+            setTimeout(getLog, TIMEOUT_TIME); // refresh every 30 seconds
         }
     })
 }
