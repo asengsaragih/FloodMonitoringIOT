@@ -2,16 +2,31 @@
 
 **Requirement**
 - arduino
-- RadioHead
+- RadioHead : https://github.com/hallard/RadioHead
+- gpsd_example : https://github.com/RedBeardCode/gpsd_example
 - gpsd gpsd-client gps-python
 - library sudo apt-get install libgps-dev
-- github https://github.com/RedBeardCode/gpsd_example
+
+**How To Install**
+- jalankan program arduino
+- buat file grabserial dan paste code dari folder node
+- download gpsd example dan edit main.cpp lalu sudo make
+- download radiohead dan edit file RadioHead/example/raspi/rf95/rf95_client.cpp lalu sudo make
 
 **How To Run**
-- jalankan program arduino
-- buat file grabserial dan jalankan file grabserial "sudo python grabserial"
-- download radiohead dan edit file "RadioHead/example/raspi/rf95/rf95_client.cpp" lalu "sudo make" dan "sudo ./rf95_client"
-- 
+- Grabserial
+```bash
+pi@raspberrypi:~ $ sudo python grabserial
+```
+- GPSD
+```bash
+pi@raspberrypi:~/gpsd_example $ sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock
+pi@raspberrypi:~/gpsd_example $ sudo ./gpsd_example
+```
+- RadioHead
+```bash
+pi@raspberrypi:~/RadioHead/example/raspi/rf95 $ sudo ./rf95_client
+```
 
 # GATEWAY
 
@@ -19,10 +34,17 @@
 - RadioHead
 
 **How To Run**
-- download radiohead dan edit file "RadioHead/example/raspi/rf95/rf95_server.cpp" lalu "sudo make" dan "sudo ./rf95_server"
+- RadioHead
+```bash
+pi@raspberrypi:~/RadioHead/example/raspi/rf95 $ sudo ./rf95_server
+```
+- Python Firebase
+```bash
+pi@raspberrypi:~/pythonFirebase $ sudo python main.py
+```
 
 
-ISSUE
+# FIX ISSUE
 
 ----------------------------------------------------------
 **GATEWAY ISSUE (frezzing if run rf95_server)**
@@ -40,12 +62,12 @@ Copy it to /boot/overlays/gpio-no-irq.dtbo, add dtoverlay=gpio-no-irq to config.
 - type "sudo nano /etc/default/gpsd" and edit file
 
 
-> 
-
-`START_DAEMON="true"`
-`USBAUTO=""`
-`DEVICES="/dev/ttyAMA0"`
-`GPSD_OPTIONS="-F /var/run/gpsd.socket"`
+```
+START_DAEMON="true
+GPSD_OPTIONS="-F /var/run/gpsd.socket
+USBAUTO=""
+DEVICES="/dev/ttyAMA0
+```
 
 - type "sudo systemctl enable gpsd.socket"
 - type "sudo systemctl start gpsd.socket"
