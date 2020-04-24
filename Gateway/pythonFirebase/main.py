@@ -69,7 +69,8 @@ while True:
     splitWaterData = replaceWaterData.split(",")
 
     # untuk marker
-    idMarker = rawId.replace(" Id: ", "")
+    idMarkerRaw = rawId.replace(" Id: ", "")
+    idMarker = idMarkerRaw.rstrip('\n')
     latitude = rawLat.replace(" Lat: ", "")
     longitude = rawLon.replace(" Lon: ", "")
     altitude = rawAlt.replace(" Alt: ", "")
