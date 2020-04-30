@@ -4,14 +4,17 @@ Syarat Penginstalan
 $ sudo pip install requests==1.2
 $ sudo pip install python-firebase
 $ sudo pip install requests --upgrade
+$ sudo pip install pyfcm
 
 """
 
 from firebase import firebase
+from pyfcm import FCMNotification
 import time
 
 # konfigurasi firebase
 firebase = firebase.FirebaseApplication('https://flood-monitoring-cba07.firebaseio.com/', None)
+push_service = FCMNotification(api_key="AAAAVC27ud8:APA91bFRJxXQk1kgZG70mgSPprIWCY3si2ZdiuDxPqK8Qi7_33wRrG_K8FVR_HhCWGcjmJ0JG5JgGdmsreNIlA5fqdqoTZW9xpt6rt8SMVNvC9Vg0jr-d6Cff-iamP1klnZvkCaNNrkg")
 
 MINUTES = 60
 TIMEOUT_TIME = MINUTES * 30
@@ -88,6 +91,7 @@ while True:
 
         databaseLatitude = firebaseResult['latitude']
         databaseLongitude = firebaseResult['longitude']
+        databaseMarkerName = firebaseResult['name']
 
         if str(latitude) != str(databaseLatitude):
             firebase.put('/Marker/' + idMarker, 'latitude', float(latitude))
@@ -112,6 +116,23 @@ while True:
             print("Level : " + str(level))
             print("Kategori : " + str(category))
             print("")
+
+            try:
+                if int(category) == 2 or int(category) == 3:
+                    titleMessage = ""
+                    bodyMessage = "Debit : " + debit + " L/m | Level : " + level + " cm"
+
+                    if int(category) == 2:
+                        titleMessage = databaseMarkerName + " Kat : Waspada"
+                    else:
+                        titleMessage = databaseMarkerName + " Kat : Bahaya"
+
+                    result = push_service.notify_topic_subscribers(topic_name="FLOOD_MONITORING", message_body=bodyMessage, message_title=titleMessage)
+
+                    print("")
+                    print("Notifikasi dikirimkan")
+            except:
+                print("Error Push Notification")
         except:
             print("Error insert new data")
     except:
