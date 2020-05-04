@@ -58,84 +58,90 @@ def GET_MILIESTIME():
     return "-" + str(int(round(time.time() * 1000)))
 
 while True:
-    rawTime = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[0]
-    rawLat = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[1]
-    rawLon = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[2]
-    rawAlt = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[3]
-    rawData = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[4]
-    rawId = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[5]
-
-    # pemecahan variable bercabang
-    replaceDateTime = rawTime.replace(" Time: ", "")
-    replaceWaterData = rawData.replace(" Data: ", "")
-    splitDataTime = replaceDateTime.split(" ")
-    splitWaterData = replaceWaterData.split(",")
-
-    # untuk marker
-    idMarkerRaw = rawId.replace(" Id: ", "")
-    idMarker = idMarkerRaw.rstrip('\n')
-    latitude = rawLat.replace(" Lat: ", "")
-    longitude = rawLon.replace(" Lon: ", "")
-    altitude = rawAlt.replace(" Alt: ", "")
-
-    # untuk child marker
-    debit = splitWaterData[0]
-    level = splitWaterData[1]
-    category = splitWaterData[2]
-    miliestime = GET_MILIESTIME()
-    date = CORRECTION_DATE(splitDataTime[0])
-    timee = splitDataTime[1]
-
     try:
-        firebaseResult = firebase.get('/Marker/' + idMarker, '')
-
-        databaseLatitude = firebaseResult['latitude']
-        databaseLongitude = firebaseResult['longitude']
-        databaseMarkerName = firebaseResult['name']
-
-        if str(latitude) != str(databaseLatitude):
-            firebase.put('/Marker/' + idMarker, 'latitude', float(latitude))
-            firebase.put('/Marker/' + idMarker, 'longitude', float(longitude))
-            print("Lokasi marker diperbaruhi")
-
-        pushRecent = {
-            'category': int(category),
-            'date': date,
-            'debit': debit + " L/m",
-            'level': level + " cm",
-            'miliestime': miliestime,
-            'status': 1,
-            'time': timee
-        }
+        rawTime = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[0]
+        rawLat = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[1]
+        rawLon = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[2]
+        rawAlt = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[3]
+        rawData = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[4]
+        rawId = SPLIT_RAW_DATA(open("/home/pi/data.txt", "r"))[5]
 
         try:
-            firebase.post('/Marker/' + idMarker + '/recent/', pushRecent)
-            print("Data baru ditambahkan")
-            print("Tanggal : " + str(date) + " " + str(timee))
-            print("Debit : " + str(debit))
-            print("Level : " + str(level))
-            print("Kategori : " + str(category))
-            print("")
+            # pemecahan variable bercabang
+            replaceDateTime = rawTime.replace(" Time: ", "")
+            replaceWaterData = rawData.replace(" Data: ", "")
+            splitDataTime = replaceDateTime.split(" ")
+            splitWaterData = replaceWaterData.split(",")
+
+            # untuk marker
+            idMarkerRaw = rawId.replace(" Id: ", "")
+            idMarker = idMarkerRaw.rstrip('\n')
+            latitude = rawLat.replace(" Lat: ", "")
+            longitude = rawLon.replace(" Lon: ", "")
+            altitude = rawAlt.replace(" Alt: ", "")
+
+            # untuk child marker
+            debit = splitWaterData[0]
+            level = splitWaterData[1]
+            category = splitWaterData[2]
+            miliestime = GET_MILIESTIME()
+            date = CORRECTION_DATE(splitDataTime[0])
+            timee = splitDataTime[1]
 
             try:
-                if int(category) == 2 or int(category) == 3:
-                    titleMessage = ""
-                    bodyMessage = "Debit : " + debit + " L/m | Level : " + level + " cm"
+                firebaseResult = firebase.get('/Marker/' + idMarker, '')
 
-                    if int(category) == 2:
-                        titleMessage = databaseMarkerName + " Kat : Waspada"
-                    else:
-                        titleMessage = databaseMarkerName + " Kat : Bahaya"
+                databaseLatitude = firebaseResult['latitude']
+                databaseLongitude = firebaseResult['longitude']
+                databaseMarkerName = firebaseResult['name']
 
-                    result = push_service.notify_topic_subscribers(topic_name="FLOOD_MONITORING", message_body=bodyMessage, message_title=titleMessage)
+                if str(latitude) != str(databaseLatitude):
+                    firebase.put('/Marker/' + idMarker, 'latitude', float(latitude))
+                    firebase.put('/Marker/' + idMarker, 'longitude', float(longitude))
+                    print("Lokasi marker diperbaruhi")
 
+                pushRecent = {
+                    'category': int(category),
+                    'date': date,
+                    'debit': debit + " L/m",
+                    'level': level + " cm",
+                    'miliestime': miliestime,
+                    'status': 1,
+                    'time': timee
+                }
+
+                try:
+                    firebase.post('/Marker/' + idMarker + '/recent/', pushRecent)
+                    print("Data baru ditambahkan")
+                    print("Tanggal : " + str(date) + " " + str(timee))
+                    print("Debit : " + str(debit))
+                    print("Level : " + str(level))
+                    print("Kategori : " + str(category))
                     print("")
-                    print("Notifikasi dikirimkan")
+
+                    try:
+                        if int(category) == 2 or int(category) == 3:
+                            titleMessage = ""
+                            bodyMessage = "Debit : " + debit + " L/m | Level : " + level + " cm"
+
+                            if int(category) == 2:
+                                titleMessage = databaseMarkerName + " Kat : Waspada"
+                            else:
+                                titleMessage = databaseMarkerName + " Kat : Bahaya"
+
+                            result = push_service.notify_topic_subscribers(topic_name="FLOOD_MONITORING", message_body=bodyMessage, message_title=titleMessage)
+
+                            print("")
+                            print("Notifikasi dikirimkan")
+                    except:
+                        print("Error Push Notification")
+                except:
+                    print("Error insert new data")
             except:
-                print("Error Push Notification")
+                print("Error getting database")
         except:
-            print("Error insert new data")
+            print("Error Configure Data")
     except:
-        print("Error getting database")
+        print("Error Open Data")
 
     time.sleep(TIMEOUT_TIME)
