@@ -74,4 +74,11 @@ DEVICES="/dev/ttyAMA0
 - type "sudo gpsd /dev/ttyAMA0 -F /var/run/gpsd.sock"
 
 
+**FIX ARDUINO SOFTWARE CANT OPEN**
+
+- open C:\Users\{username}\AppData\Local\Arduino15
+- delete any files named package_index.json, package_index.json.sig, and package_index.json.sig.tmp
+- run arduino_debug.exe from cmd
+
+
 ----------------------------------------------------------
