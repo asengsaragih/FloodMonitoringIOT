@@ -1,50 +1,33 @@
-/*
- * Program Proyek Akhir Manipulasi
- *
- * Tinggal ganti angka di variable category
- * 1 = aman
- * 2 = siaga
- * 3 = waspada
-*/
-
-long second = 1000;
-long minute = second * 60;
-long hour = minute * 60;
+#define NORMAL_BTN 5
+#define WASPADA_BTN 6
+#define BAHAYA_BTN 7
 
 int category = 1;
 float debit;
 float level;
 
-int buttonDanger = 4;
-int buttonStandby = 5;
-int buttonNormal = 6;
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   randomSeed(analogRead(0));
-
-  // Button  
-  pinMode(buttonDanger, INPUT);
-  pinMode(buttonStandby, INPUT);
-  pinMode(buttonNormal, INPUT);
-  
-  digitalWrite(buttonDanger, HIGH);
-  digitalWrite(buttonStandby, HIGH);
-  digitalWrite(buttonNormal, HIGH);
+  btnConf();
 }
 
 void loop() {
-  if (digitalRead(buttonDanger) == LOW) {
-    category = 3;
+  // put your main code here, to run repeatedly:
+  if (digitalRead(NORMAL_BTN) == LOW) {
+//    Serial.println("NORMAL");
+    category = 1;
   }
 
-  if (digitalRead(buttonStandby) == LOW) {
+  if (digitalRead(WASPADA_BTN) == LOW) {
+//    Serial.println("WASPADA");
     category = 2;
   }
 
-  if (digitalRead(buttonNormal) == LOW) {
-    category = 1;
+  if (digitalRead(BAHAYA_BTN) == LOW) {
+//    Serial.println("BAHAYA");
+    category = 3;
   }
 
   if(category == 1) {
@@ -65,10 +48,15 @@ void loop() {
   Serial.print(category);
   Serial.println();
 
-  /*
-  * waktunya tinggal diganti sesuai dengan keinginan
-  * jika mau 15 menit delay(minute * 15); dan seterusnya
-  */
+  delay(1000);
+}
 
-  delay(second);
+void btnConf() {
+  pinMode(NORMAL_BTN, INPUT);
+  pinMode(WASPADA_BTN, INPUT);
+  pinMode(BAHAYA_BTN, INPUT);
+
+  digitalWrite(NORMAL_BTN, HIGH);
+  digitalWrite(WASPADA_BTN, HIGH);
+  digitalWrite(BAHAYA_BTN, HIGH);
 }
